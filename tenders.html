@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Live Care Tenders | Care Cove Limited</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --p-dark:#140a2e; --p-main:#3d2278; --p-mid:#5535a0; --p-light:#8b6cc7; --p-pale:#ede8f8;
+      --gold:#c9a84c; --gold-lt:#e8c97a; --white:#ffffff; --off:#f7f5fb;
+      --text:#1a1028; --text-mid:#4e4368; --text-lt:#8878a8; --border:rgba(93,53,160,0.13);
+      --sh:0 4px 20px rgba(20,10,46,0.1); --sh-lg:0 12px 40px rgba(20,10,46,0.16); --r:12px;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family:'DM Sans',sans-serif; background:var(--off); color:var(--text); -webkit-font-smoothing:antialiased; min-height:100vh; }
+
+    /* NAVBAR */
+    .navbar { background:rgba(255,255,255,0.97); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); height:68px; display:flex; align-items:center; position:sticky; top:0; z-index:100; box-shadow:0 2px 20px rgba(20,10,46,0.07); }
+    .nav-inner { max-width:1200px; margin:0 auto; padding:0 28px; width:100%; display:flex; align-items:center; justify-content:space-between; gap:16px; }
+    .nav-logo { height:42px; width:auto; object-fit:contain; }
+    .nav-back { display:inline-flex; align-items:center; gap:6px; text-decoration:none; color:var(--text-mid); font-size:0.84rem; font-weight:600; transition:color 0.2s; }
+    .nav-back:hover { color:var(--p-main); }
+    .nav-right { display:flex; align-items:center; gap:12px; }
+
+    /* BUTTONS */
+    .btn { display:inline-flex; align-items:center; gap:7px; padding:11px 22px; border-radius:8px; font-family:'DM Sans',sans-serif; font-weight:700; font-size:0.84rem; text-decoration:none; cursor:pointer; border:none; transition:transform 0.2s ease,box-shadow 0.2s ease; position:relative; overflow:hidden; }
+    .btn::before { content:''; position:absolute; top:0; left:-80%; width:60%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent); transform:skewX(-18deg); transition:left 0.5s ease; }
+    .btn:hover::before { left:130%; }
+    .btn-primary { background:linear-gradient(135deg,var(--p-main),var(--p-mid)); color:var(--white); box-shadow:0 4px 16px rgba(61,34,120,0.3); }
+    .btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(61,34,120,0.45); }
+    .btn-gold { background:linear-gradient(135deg,#b8922e,var(--gold),var(--gold-lt)); color:var(--p-dark); font-weight:800; box-shadow:0 4px 16px rgba(201,168,76,0.35); }
+    .btn-gold:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(201,168,76,0.55); }
+    .btn-outline { background:transparent; border:2px solid var(--border); color:var(--text-mid); }
+    .btn-outline:hover { border-color:var(--p-light); color:var(--p-main); transform:translateY(-2px); }
+
+    /* HERO */
+    .hero-banner { background:linear-gradient(150deg,var(--p-dark) 0%,var(--p-main) 60%,#6b42b8 100%); padding:60px 28px; text-align:center; position:relative; overflow:hidden; }
+    .hero-banner::before { content:''; position:absolute; inset:0; background-image:radial-gradient(rgba(255,255,255,0.05) 1px,transparent 1px); background-size:32px 32px; pointer-events:none; }
+    .hero-banner::after { content:''; position:absolute; top:-80px; right:-80px; width:300px; height:300px; border-radius:50%; background:radial-gradient(circle,rgba(201,168,76,0.18) 0%,transparent 65%); filter:blur(40px); pointer-events:none; }
+    .hero-content { position:relative; z-index:1; max-width:700px; margin:0 auto; }
+    .hero-badge { display:inline-flex; align-items:center; gap:8px; background:rgba(201,168,76,0.15); border:1px solid rgba(201,168,76,0.3); color:var(--gold-lt); padding:7px 18px; border-radius:100px; font-size:0.75rem; font-weight:700; letter-spacing:0.07em; margin-bottom:20px; }
+    .live-dot { width:7px; height:7px; border-radius:50%; background:#4ade80; box-shadow:0 0 8px rgba(74,222,128,0.8); animation:livePulse 1.8s ease infinite; }
+    @keyframes livePulse { 0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.6;transform:scale(1.3)} }
+    .hero-banner h1 { font-family:'Playfair Display',serif; font-size:clamp(1.8rem,4vw,2.8rem); color:var(--white); margin-bottom:14px; line-height:1.2; }
+    .hero-banner h1 em { font-style:italic; color:var(--gold-lt); }
+    .hero-banner > .hero-content > p { color:rgba(255,255,255,0.62); font-size:1rem; line-height:1.75; margin-bottom:28px; }
+    .hero-stats { display:inline-flex; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); border-radius:14px; padding:16px 0; backdrop-filter:blur(10px); }
+    .hero-stat { padding:0 28px; display:flex; flex-direction:column; align-items:center; gap:3px; }
+    .hero-stat+.hero-stat { border-left:1px solid rgba(255,255,255,0.1); }
+    .hero-stat strong { font-family:'Playfair Display',serif; font-size:1.4rem; color:var(--gold-lt); font-weight:700; }
+    .hero-stat span { font-size:0.72rem; color:rgba(255,255,255,0.45); font-weight:500; }
+
+    /* SEARCH */
+    .search-bar { background:var(--white); border-bottom:1px solid var(--border); padding:20px 28px; position:sticky; top:68px; z-index:90; box-shadow:0 2px 12px rgba(20,10,46,0.06); }
+    .search-inner { max-width:1200px; margin:0 auto; display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+    .search-wrap { flex:1; min-width:200px; position:relative; }
+    .search-wrap svg { position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--text-lt); pointer-events:none; }
+    .search-input { width:100%; padding:12px 14px 12px 42px; border:2px solid var(--border); border-radius:8px; font-family:'DM Sans',sans-serif; font-size:0.9rem; color:var(--text); background:var(--off); outline:none; transition:border-color 0.2s; }
+    .search-input:focus { border-color:var(--p-light); background:var(--white); }
+    .filter-select { padding:12px 16px; border:2px solid var(--border); border-radius:8px; font-family:'DM Sans',sans-serif; font-size:0.88rem; color:var(--text-mid); background:var(--off); cursor:pointer; outline:none; transition:border-color 0.2s; min-width:150px; }
+    .filter-select:focus { border-color:var(--p-light); }
+    .results-count { font-size:0.82rem; color:var(--text-lt); font-weight:500; white-space:nowrap; margin-left:auto; }
+    .results-count strong { color:var(--p-main); }
+
+    /* MAIN */
+    .main { max-width:1200px; margin:0 auto; padding:32px 28px 80px; }
+
+    /* LOADING / ERROR / EMPTY */
+    .loading-wrap { text-align:center; padding:80px 20px; }
+    .spinner { width:48px; height:48px; border:4px solid var(--p-pale); border-top-color:var(--p-main); border-radius:50%; animation:spin 0.9s linear infinite; margin:0 auto 20px; }
+    @keyframes spin { to{transform:rotate(360deg)} }
+    .loading-wrap p { color:var(--text-lt); font-size:0.9rem; }
+    .error-wrap,.empty-state { text-align:center; padding:60px 20px; display:none; }
+    .error-wrap h3,.empty-state h3 { color:var(--p-dark); margin-bottom:10px; }
+    .error-wrap p,.empty-state p { color:var(--text-lt); font-size:0.9rem; margin-bottom:24px; }
+
+    /* TENDER GRID */
+    .tender-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(360px,1fr)); gap:20px; display:none; }
+
+    /* CARD */
+    .tender-card { background:var(--white); border:1px solid var(--border); border-radius:16px; overflow:hidden; transition:transform 0.25s ease,box-shadow 0.25s ease,border-color 0.25s ease; display:flex; flex-direction:column; }
+    .tender-card:hover { transform:translateY(-4px); box-shadow:var(--sh-lg); border-color:rgba(93,53,160,0.22); }
+    .card-accent { height:4px; background:linear-gradient(90deg,var(--p-main),var(--p-light)); }
+    .card-accent.urgent { background:linear-gradient(90deg,#dc2626,#f97316); }
+    .card-accent.closing-soon { background:linear-gradient(90deg,var(--gold),var(--gold-lt)); }
+    .card-body { padding:24px; flex:1; display:flex; flex-direction:column; }
+    .card-badges { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+    .badge { padding:4px 10px; border-radius:100px; font-size:0.7rem; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; }
+    .badge-care { background:var(--p-pale); color:var(--p-main); }
+    .badge-urgent { background:#fee2e2; color:#dc2626; animation:urgentPulse 2s ease infinite; }
+    .badge-soon { background:#fef3c7; color:#92400e; }
+    .badge-new { background:#dcfce7; color:#166534; }
+    @keyframes urgentPulse { 0%,100%{box-shadow:none}50%{box-shadow:0 0 0 3px rgba(220,38,38,0.15)} }
+    .card-title { font-family:'Playfair Display',serif; font-size:1rem; font-weight:700; color:var(--p-dark); line-height:1.4; margin-bottom:16px; flex:1; }
+    .card-meta { display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }
+    .meta-row { display:flex; align-items:center; gap:8px; font-size:0.82rem; color:var(--text-mid); }
+    .meta-row svg { flex-shrink:0; color:var(--p-light); }
+    .meta-row strong { color:var(--text); font-weight:600; }
+    .closing-bar { display:flex; justify-content:space-between; align-items:center; background:var(--off); border-radius:8px; padding:10px 14px; margin-bottom:16px; border:1px solid var(--border); }
+    .closing-label { font-size:0.75rem; color:var(--text-lt); font-weight:500; }
+    .closing-days { font-size:0.82rem; font-weight:800; color:var(--p-main); }
+    .closing-days.urgent { color:#dc2626; }
+    .closing-days.soon { color:#d97706; }
+    .desc-toggle { background:none; border:none; color:var(--p-main); font-family:'DM Sans',sans-serif; font-size:0.82rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:5px; padding:0; margin-bottom:12px; transition:color 0.2s; }
+    .desc-toggle:hover { color:var(--p-mid); }
+    .desc-toggle svg { transition:transform 0.3s ease; }
+    .desc-toggle.open svg { transform:rotate(180deg); }
+    .desc-content { max-height:0; overflow:hidden; transition:max-height 0.4s ease; }
+    .desc-content.open { max-height:300px; }
+    .desc-text { font-size:0.83rem; color:var(--text-mid); line-height:1.75; padding-bottom:16px; }
+    .card-actions { display:flex; gap:10px; padding:16px 24px; border-top:1px solid var(--border); background:var(--off); }
+    .card-actions .btn { flex:1; justify-content:center; font-size:0.82rem; padding:12px 10px; }
+
+    /* MODAL */
+    .modal-overlay { position:fixed; inset:0; background:rgba(20,10,46,0.78); backdrop-filter:blur(8px); z-index:1000; display:flex; align-items:center; justify-content:center; padding:20px; opacity:0; pointer-events:none; transition:opacity 0.3s ease; }
+    .modal-overlay.open { opacity:1; pointer-events:all; }
+    .modal { background:var(--white); border-radius:20px; max-width:560px; width:100%; max-height:92vh; overflow-y:auto; transform:translateY(20px); transition:transform 0.3s ease; box-shadow:0 24px 80px rgba(20,10,46,0.3); }
+    .modal-overlay.open .modal { transform:translateY(0); }
+    .modal-header { background:linear-gradient(135deg,var(--p-dark),var(--p-main)); padding:28px 28px 22px; border-radius:20px 20px 0 0; position:relative; }
+    .modal-close { position:absolute; top:16px; right:16px; background:rgba(255,255,255,0.15); border:none; color:white; width:34px; height:34px; border-radius:50%; cursor:pointer; font-size:1.1rem; display:flex; align-items:center; justify-content:center; transition:background 0.2s; }
+    .modal-close:hover { background:rgba(255,255,255,0.28); }
+    .modal-header h3 { font-family:'Playfair Display',serif; color:var(--white); font-size:1.25rem; margin-bottom:6px; }
+    .modal-header p { color:rgba(255,255,255,0.6); font-size:0.83rem; line-height:1.5; }
+    .modal-tender-tag { display:inline-block; margin-top:12px; background:rgba(201,168,76,0.2); border:1px solid rgba(201,168,76,0.35); color:var(--gold-lt); padding:6px 14px; border-radius:8px; font-size:0.78rem; font-weight:600; line-height:1.4; font-style:italic; }
+
+    /* Progress */
+    .progress-bar-wrap { padding:18px 28px 0; }
+    .progress-steps { display:flex; gap:6px; margin-bottom:5px; }
+    .progress-step { flex:1; height:4px; border-radius:2px; background:var(--p-pale); transition:background 0.3s; }
+    .progress-step.done { background:var(--p-main); }
+    .progress-step.active { background:var(--gold); }
+    .progress-label { font-size:0.71rem; color:var(--text-lt); font-weight:600; }
+
+    /* Steps */
+    .modal-step { display:none; padding:22px 28px; }
+    .modal-step.active { display:block; }
+    .step-title { font-size:1rem; font-weight:700; color:var(--p-dark); margin-bottom:5px; }
+    .step-subtitle { font-size:0.81rem; color:var(--text-lt); margin-bottom:20px; line-height:1.5; }
+
+    /* Form */
+    .form-group { margin-bottom:14px; }
+    .form-label { display:block; font-size:0.81rem; font-weight:700; color:var(--text); margin-bottom:6px; }
+    .form-label span { color:#dc2626; margin-left:2px; }
+    .form-input,.form-select,.form-textarea { width:100%; padding:11px 14px; border:2px solid var(--border); border-radius:9px; font-family:'DM Sans',sans-serif; font-size:0.88rem; color:var(--text); background:var(--off); outline:none; transition:border-color 0.2s,background 0.2s; }
+    .form-input:focus,.form-select:focus,.form-textarea:focus { border-color:var(--p-light); background:var(--white); }
+    .form-textarea { min-height:70px; resize:vertical; }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+
+    /* Option cards */
+    .option-cards { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:4px; }
+    .option-card { border:2px solid var(--border); border-radius:10px; padding:12px 10px; cursor:pointer; text-align:center; transition:all 0.2s; background:var(--off); }
+    .option-card:hover { border-color:var(--p-light); transform:translateY(-1px); }
+    .option-card.selected { border-color:var(--p-main); background:var(--p-pale); }
+    .opt-icon { font-size:1.3rem; margin-bottom:5px; display:block; }
+    .opt-label { font-size:0.8rem; font-weight:700; color:var(--text); }
+    .opt-sub { font-size:0.7rem; color:var(--text-lt); margin-top:2px; }
+
+    /* Rating pills */
+    .rating-options { display:flex; gap:7px; flex-wrap:wrap; }
+    .rating-pill { padding:7px 14px; border-radius:100px; border:2px solid var(--border); background:var(--off); font-size:0.8rem; font-weight:700; cursor:pointer; transition:all 0.2s; color:var(--text-mid); }
+    .rating-pill:hover { border-color:var(--p-light); }
+    .rating-pill.selected { border-color:var(--p-main); background:var(--p-pale); color:var(--p-main); }
+    .rating-pill.outstanding.selected { border-color:#16a34a; background:#dcfce7; color:#16a34a; }
+    .rating-pill.good.selected { border-color:#2563eb; background:#dbeafe; color:#2563eb; }
+    .rating-pill.ri.selected { border-color:#d97706; background:#fef3c7; color:#d97706; }
+    .rating-pill.ia.selected { border-color:#dc2626; background:#fee2e2; color:#dc2626; }
+
+    /* Step nav */
+    .step-nav { display:flex; gap:10px; align-items:center; padding:0 28px 22px; justify-content:flex-end; }
+    .btn-back { background:none; border:2px solid var(--border); color:var(--text-mid); font-family:'DM Sans',sans-serif; font-weight:700; font-size:0.84rem; padding:10px 18px; border-radius:8px; cursor:pointer; transition:all 0.2s; }
+    .btn-back:hover { border-color:var(--p-light); color:var(--p-main); }
+    .btn-next { background:linear-gradient(135deg,var(--p-main),var(--p-mid)); color:var(--white); font-family:'DM Sans',sans-serif; font-weight:700; font-size:0.84rem; padding:11px 22px; border-radius:8px; cursor:pointer; border:none; box-shadow:0 4px 14px rgba(61,34,120,0.28); transition:transform 0.2s,box-shadow 0.2s; display:flex; align-items:center; gap:6px; }
+    .btn-next:hover { transform:translateY(-2px); box-shadow:0 8px 22px rgba(61,34,120,0.42); }
+
+    /* Final step choice */
+    .final-options { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:8px; }
+    .final-opt { border:2px solid var(--border); border-radius:14px; padding:22px 16px; text-align:center; cursor:pointer; transition:all 0.25s; background:var(--off); }
+    .final-opt:hover { transform:translateY(-3px); border-color:var(--p-light); box-shadow:var(--sh); }
+    .final-opt.gold-opt { border-color:var(--gold); background:linear-gradient(135deg,rgba(201,168,76,0.07),rgba(232,201,122,0.1)); }
+    .final-opt.gold-opt:hover { border-color:var(--gold-lt); box-shadow:0 8px 24px rgba(201,168,76,0.2); }
+    .fo-icon { font-size:2rem; margin-bottom:10px; display:block; }
+    .final-opt h4 { font-size:0.9rem; font-weight:700; color:var(--p-dark); margin-bottom:6px; }
+    .final-opt p { font-size:0.75rem; color:var(--text-lt); line-height:1.5; }
+
+    /* Success */
+    .modal-success { text-align:center; padding:44px 28px; display:none; }
+    .success-icon { width:68px; height:68px; border-radius:50%; background:linear-gradient(135deg,var(--gold),var(--gold-lt)); display:flex; align-items:center; justify-content:center; font-size:2rem; margin:0 auto 18px; box-shadow:0 8px 28px rgba(201,168,76,0.4); }
+    .modal-success h3 { font-family:'Playfair Display',serif; color:var(--p-dark); margin-bottom:12px; font-size:1.25rem; }
+    .modal-success > p { color:var(--text-mid); font-size:0.88rem; line-height:1.7; }
+    .success-detail { background:var(--p-pale); border-radius:10px; padding:14px 18px; margin:16px 0; text-align:left; }
+    .success-detail p { font-size:0.81rem; color:var(--text-mid); margin:4px 0; }
+    .success-detail strong { color:var(--p-dark); }
+
+    /* CTA banner */
+    .cta-banner { background:linear-gradient(135deg,var(--p-main),var(--p-dark)); padding:48px 28px; text-align:center; position:relative; overflow:hidden; margin-top:60px; }
+    .cta-banner::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 70% 70% at 50% 50%,rgba(201,168,76,0.12) 0%,transparent 60%); pointer-events:none; }
+    .cta-banner-inner { position:relative; z-index:1; max-width:640px; margin:0 auto; }
+    .cta-banner h2 { font-family:'Playfair Display',serif; color:var(--white); font-size:clamp(1.4rem,3vw,2rem); margin-bottom:12px; }
+    .cta-banner p { color:rgba(255,255,255,0.65); font-size:0.95rem; line-height:1.75; margin-bottom:28px; }
+    .cta-banner-btns { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+
+    /* Footer */
+    .footer { background:var(--p-dark); text-align:center; padding:28px; color:rgba(255,255,255,0.3); font-size:0.76rem; }
+    .footer a { color:rgba(255,255,255,0.5); text-decoration:none; }
+    .footer a:hover { color:var(--gold-lt); }
+
+    /* Responsive */
+    @media(max-width:768px){
+      .tender-grid{grid-template-columns:1fr}
+      .form-row{grid-template-columns:1fr}
+      .final-options{grid-template-columns:1fr}
+      .hero-stats{flex-wrap:wrap}
+      .hero-stat{padding:8px 16px}
+    }
+    @media(max-width:480px){
+      .hero-banner{padding:40px 16px}
+      .main{padding:20px 16px 60px}
+      .nav-inner{padding:0 16px}
+      .search-bar{padding:14px 16px}
+      .results-count{display:none}
+      .card-actions{flex-direction:column}
+      .card-actions .btn{flex:none}
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="index.html"><img src="logo.png" alt="Care Cove Limited" class="nav-logo"/></a>
+      <div class="nav-right">
+        <a href="index.html" class="nav-back">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+          Back to main site
+        </a>
+        <a href="https://scheduler.zoom.us/sheu-matewe/free-consultation" target="_blank" class="btn btn-primary">Book Free Call →</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="hero-banner">
+    <div class="hero-content">
+      <div class="hero-badge"><span class="live-dot"></span>Live Data from GOV.UK Contracts Finder</div>
+      <h1>Active Care &amp; Health<br><em>Tenders Right Now</em></h1>
+      <p>Browse live contract opportunities filtered for UK care providers. Found one you want? Care Cove can write the winning bid for you.</p>
+      <div class="hero-stats">
+        <div class="hero-stat"><strong id="stat-total">—</strong><span>Live tenders</span></div>
+        <div class="hero-stat"><strong id="stat-urgent">—</strong><span>Closing this week</span></div>
+        <div class="hero-stat"><strong>Free</strong><span>To browse</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="search-bar">
+    <div class="search-inner">
+      <div class="search-wrap">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" class="search-input" id="search-input" placeholder="Search by keyword…" oninput="filterTenders()"/>
+      </div>
+      <select class="filter-select" id="filter-location" onchange="filterTenders()">
+        <option value="">All Locations</option>
+        <option value="london">London</option>
+        <option value="midlands">Midlands</option>
+        <option value="north">North of England</option>
+        <option value="south">South of England</option>
+        <option value="yorkshire">Yorkshire</option>
+        <option value="east">East of England</option>
+        <option value="national">National</option>
+      </select>
+      <select class="filter-select" id="filter-sort" onchange="filterTenders()">
+        <option value="closing">Closing Soonest</option>
+        <option value="newest">Newest First</option>
+        <option value="value">Highest Value</option>
+      </select>
+      <div class="results-count" id="results-count"></div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="loading-wrap" id="loading"><div class="spinner"></div><p>Fetching live care tenders from GOV.UK…</p></div>
+    <div class="error-wrap" id="error-state">
+      <div style="font-size:3rem;margin-bottom:16px">⚠️</div>
+      <h3>Couldn't load tenders right now</h3>
+      <p>There was a problem connecting to GOV.UK Contracts Finder. Please try again.</p>
+      <button class="btn btn-primary" onclick="loadTenders()">Try Again</button>
+    </div>
+    <div class="empty-state" id="empty-state">
+      <div style="font-size:3rem;margin-bottom:16px">🔍</div>
+      <h3>No tenders match your search</h3>
+      <p>Try different keywords or clear your filters to see all available tenders.</p>
+    </div>
+    <div class="tender-grid" id="tender-grid"></div>
+    <div class="cta-banner" id="cta-banner" style="display:none">
+      <div class="cta-banner-inner">
+        <h2>Found a Tender You Want to Win?</h2>
+        <p>Care Cove writes compliant, compelling tenders that commissioners actually read — built around what local authorities and NHS bodies want to see.</p>
+        <div class="cta-banner-btns">
+          <a href="https://scheduler.zoom.us/sheu-matewe/free-consultation" target="_blank" class="btn btn-gold">Book a Free Tender Review →</a>
+          <a href="index.html" class="btn btn-outline" style="color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.25)">About Care Cove</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>© 2025 Care Cove Limited · <a href="index.html">carecove.co.uk</a> · Tender data sourced from <a href="https://www.contractsfinder.service.gov.uk" target="_blank">GOV.UK Contracts Finder</a> under Open Government Licence v3.0</p>
+  </footer>
+
+  <!-- QUALIFY MODAL -->
+  <div class="modal-overlay" id="qualify-modal">
+    <div class="modal">
+
+      <div class="modal-header">
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <h3>Check If You Qualify</h3>
+        <p>Answer a few quick questions — Sheu will personally review your profile against this tender within 24 hours.</p>
+        <span class="modal-tender-tag" id="modal-tender-name"></span>
+      </div>
+
+      <div class="progress-bar-wrap" id="progress-wrap">
+        <div class="progress-steps">
+          <div class="progress-step active" id="ps-1"></div>
+          <div class="progress-step" id="ps-2"></div>
+          <div class="progress-step" id="ps-3"></div>
+          <div class="progress-step" id="ps-4"></div>
+        </div>
+        <div class="progress-label" id="progress-label">Step 1 of 4 — Your Business</div>
+      </div>
+
+      <!-- STEP 1: Contact details -->
+      <div class="modal-step active" id="step-1">
+        <div class="step-title">Tell us about your business</div>
+        <div class="step-subtitle">We need a few basics so Sheu can give you an accurate assessment.</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Your Name<span>*</span></label>
+            <input type="text" class="form-input" id="q-name" placeholder="e.g. Sarah Jones"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Your Role<span>*</span></label>
+            <input type="text" class="form-input" id="q-role" placeholder="e.g. Director, Owner"/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Email Address<span>*</span></label>
+            <input type="email" class="form-input" id="q-email" placeholder="you@yourcare.co.uk"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone Number<span>*</span></label>
+            <input type="tel" class="form-input" id="q-phone" placeholder="07700 000000"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Business / Organisation Name<span>*</span></label>
+          <input type="text" class="form-input" id="q-business" placeholder="e.g. Sunrise Care Services Ltd"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Type of Care Service<span>*</span></label>
+          <select class="form-select" id="q-type">
+            <option value="">Select your service type…</option>
+            <option>Domiciliary / Home Care</option>
+            <option>Supported Living</option>
+            <option>Residential Care Home</option>
+            <option>Short Breaks / Respite</option>
+            <option>Day Services</option>
+            <option>Mental Health Services</option>
+            <option>Nursing Care</option>
+            <option>Learning Disabilities</option>
+            <option>Children's Services</option>
+            <option>Other Healthcare</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- STEP 2: CQC -->
+      <div class="modal-step" id="step-2">
+        <div class="step-title">CQC Registration &amp; Compliance</div>
+        <div class="step-subtitle">Most public tenders require CQC registration. This helps us assess your eligibility accurately.</div>
+        <div class="form-group">
+          <label class="form-label">Are you CQC registered?<span>*</span></label>
+          <div class="option-cards">
+            <div class="option-card" onclick="selectOption(this,'q-cqc','yes')"><span class="opt-icon">✅</span><div class="opt-label">Yes, registered</div></div>
+            <div class="option-card" onclick="selectOption(this,'q-cqc','in-progress')"><span class="opt-icon">⏳</span><div class="opt-label">In progress</div></div>
+            <div class="option-card" onclick="selectOption(this,'q-cqc','no')"><span class="opt-icon">❌</span><div class="opt-label">Not yet</div><div class="opt-sub">We can help with this</div></div>
+            <div class="option-card" onclick="selectOption(this,'q-cqc','not-required')"><span class="opt-icon">ℹ️</span><div class="opt-label">Not applicable</div></div>
+          </div>
+          <input type="hidden" id="q-cqc"/>
+        </div>
+        <div class="form-group" id="rating-group" style="display:none">
+          <label class="form-label">What is your current CQC rating?</label>
+          <div class="rating-options">
+            <div class="rating-pill outstanding" onclick="selectPill(this,'q-rating','Outstanding')">⭐ Outstanding</div>
+            <div class="rating-pill good" onclick="selectPill(this,'q-rating','Good')">✅ Good</div>
+            <div class="rating-pill ri" onclick="selectPill(this,'q-rating','Requires Improvement')">⚠️ Requires Improvement</div>
+            <div class="rating-pill ia" onclick="selectPill(this,'q-rating','Inadequate')">🔴 Inadequate</div>
+            <div class="rating-pill" onclick="selectPill(this,'q-rating','Awaiting inspection')">⏳ Awaiting</div>
+          </div>
+          <input type="hidden" id="q-rating"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">How long has your business been operating?<span>*</span></label>
+          <select class="form-select" id="q-age">
+            <option value="">Select…</option>
+            <option>Less than 1 year</option>
+            <option>1–2 years</option>
+            <option>2–5 years</option>
+            <option>5–10 years</option>
+            <option>10+ years</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Do you currently hold any public sector contracts?</label>
+          <div class="option-cards">
+            <div class="option-card" onclick="selectOption(this,'q-contracts','yes')"><span class="opt-icon">📋</span><div class="opt-label">Yes</div></div>
+            <div class="option-card" onclick="selectOption(this,'q-contracts','no')"><span class="opt-icon">🆕</span><div class="opt-label">No — first tender</div></div>
+          </div>
+          <input type="hidden" id="q-contracts"/>
+        </div>
+      </div>
+
+      <!-- STEP 3: Capacity -->
+      <div class="modal-step" id="step-3">
+        <div class="step-title">Capacity &amp; Experience</div>
+        <div class="step-subtitle">Help us understand your current scale so we can assess this tender properly.</div>
+        <div class="form-group">
+          <label class="form-label">How many service users / clients do you currently support?</label>
+          <select class="form-select" id="q-capacity">
+            <option value="">Select…</option>
+            <option>0–10</option><option>10–30</option><option>30–75</option>
+            <option>75–150</option><option>150–300</option><option>300+</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">What regions do you currently operate in?</label>
+          <input type="text" class="form-input" id="q-regions" placeholder="e.g. West Midlands, Yorkshire, London…"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Have you submitted a public sector tender before?</label>
+          <div class="option-cards">
+            <div class="option-card" onclick="selectOption(this,'q-tendered','yes-won')"><span class="opt-icon">🏆</span><div class="opt-label">Yes — and won</div></div>
+            <div class="option-card" onclick="selectOption(this,'q-tendered','yes-lost')"><span class="opt-icon">📝</span><div class="opt-label">Yes — didn't win</div></div>
+            <div class="option-card" onclick="selectOption(this,'q-tendered','no')"><span class="opt-icon">🆕</span><div class="opt-label">No — first time</div></div>
+            <div class="option-card" onclick="selectOption(this,'q-tendered','helped')"><span class="opt-icon">🤝</span><div class="opt-label">Used help before</div></div>
+          </div>
+          <input type="hidden" id="q-tendered"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Anything specific about this tender? (optional)</label>
+          <textarea class="form-textarea" id="q-notes" placeholder="e.g. we already have relationships in this area, not sure we meet minimum requirements…"></textarea>
+        </div>
+      </div>
+
+      <!-- STEP 4: How to hear back -->
+      <div class="modal-step" id="step-4">
+        <div class="step-title">How would you like Sheu to get back to you?</div>
+        <div class="step-subtitle">Choose what works best — we'll reach out within 24 hours either way.</div>
+        <div class="final-options">
+          <div class="final-opt" onclick="submitQualify('callback')">
+            <span class="fo-icon">📞</span>
+            <h4>Call me back</h4>
+            <p>Sheu will personally call you on the number you provided within 24 hours to go through this tender together.</p>
+          </div>
+          <div class="final-opt gold-opt" onclick="submitQualify('zoom')">
+            <span class="fo-icon">📅</span>
+            <h4>Book a Zoom call now</h4>
+            <p>Skip the wait — go straight to your free 45-minute strategy session with your tender details already noted.</p>
+          </div>
+        </div>
+        <p style="font-size:0.75rem;color:var(--text-lt);text-align:center;margin-top:18px;">🔒 Your details are kept confidential and only shared with Care Cove.</p>
+      </div>
+
+      <div class="step-nav" id="step-nav">
+        <button class="btn-back" id="back-btn" onclick="prevStep()" style="display:none">← Back</button>
+        <button class="btn-next" id="next-btn" onclick="nextStep()">Continue <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg></button>
+      </div>
+
+      <!-- Success -->
+      <div class="modal-success" id="modal-success">
+        <div class="success-icon">✓</div>
+        <h3>You're All Set!</h3>
+        <p>Sheu will personally review this tender against your profile and be in touch very soon.</p>
+        <div class="success-detail" id="success-detail"></div>
+        <p style="font-size:0.79rem;color:var(--text-lt);margin-top:10px;">Can't wait? Book your Zoom call right now:</p>
+        <a id="success-zoom-link" href="https://scheduler.zoom.us/sheu-matewe/free-consultation" target="_blank" class="btn btn-gold" style="margin-top:12px;justify-content:center;width:100%">Book a Zoom Call Now →</a>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+  // ============================================
+  // CARE COVE TENDER FINDER v2
+  // ============================================
+
+  let allTenders = [];
+  let currentTender = null;
+  let currentStep = 1;
+  const TOTAL_STEPS = 4;
+
+  const PROXIES = [
+    u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+    u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+    u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`
+  ];
+
+  // Care-specific search terms — each triggers a separate API call
+  const CARE_SEARCHES = [
+    'domiciliary care',
+    'supported living',
+    'social care',
+    'home care',
+    'residential care',
+    'nursing care',
+    'mental health care',
+    'learning disabilities',
+    'respite care',
+    'care services',
+    'health and social care',
+    'CQC',
+    'care provider',
+    'community care',
+    'short breaks'
+  ];
+
+  const BASE_URL = 'https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search';
+
+  async function fetchWithProxy(url, i=0) {
+    if (i>=PROXIES.length) throw new Error('all proxies failed');
+    try {
+      const r = await fetch(PROXIES[i](url), {signal:AbortSignal.timeout(15000)});
+      if (!r.ok) throw new Error(`${r.status}`);
+      return r.json();
+    } catch(e) { return fetchWithProxy(url,i+1); }
+  }
+
+  async function loadTenders() {
+    showLoading();
+    try {
+      // Make parallel API calls for each care keyword
+      const promises = CARE_SEARCHES.map(keyword => {
+        const url = `${BASE_URL}?stages=tender&limit=100&keyword=${encodeURIComponent(keyword)}`;
+        return fetchWithProxy(url).catch(() => null); // don't fail if one keyword fails
+      });
+
+      const results = await Promise.all(promises);
+
+      // Merge all results and deduplicate by tender ID
+      const seen = new Set();
+      const merged = [];
+
+      results.forEach(data => {
+        if (!data?.releases) return;
+        data.releases.forEach(r => {
+          const t = parseTender(r);
+          if (!t) return;
+          if (!seen.has(t.id)) {
+            seen.add(t.id);
+            merged.push(t);
+          }
+        });
+      });
+
+      // Filter out expired tenders only
+      allTenders = merged.filter(t => {
+        const days = getDaysLeft(t.deadline);
+        return days === null || days > 0; // keep if no deadline or not yet expired
+      });
+
+      if (allTenders.length === 0) throw new Error('no results');
+
+      updateStats();
+      filterTenders();
+
+    } catch(e) {
+      console.warn('API failed, loading demo data:', e);
+      loadDemoTenders();
+    }
+  }
+
+  function parseTender(r) {
+    try {
+      const t=r.tender||{}, buyer=(r.parties||[]).find(p=>p.roles?.includes('buyer'))||{}, addr=buyer.address||{};
+      return {
+        id: r.ocid || Math.random().toString(36).slice(2),
+        title: t.title || r.name || 'Untitled',
+        description: t.description || '',
+        value: t.value?.amount || 0,
+        currency: t.value?.currency || 'GBP',
+        deadline: t.tenderPeriod?.endDate || '',
+        published: r.date || '',
+        location: addr.region || addr.locality || addr.countryName || 'England',
+        buyer_name: buyer.name || 'Public Sector Body',
+        url: `https://www.contractsfinder.service.gov.uk/Notice/${r.id||''}`
+      };
+    } catch(e) { return null; }
+  }
+
+  function getDaysLeft(d) { return d ? Math.ceil((new Date(d)-new Date())/86400000) : null; }
+
+  function formatValue(v) {
+    if (!v||v===0) return 'Value not disclosed';
+    if (v>=1000000) return `£${(v/1000000).toFixed(1)}m`;
+    if (v>=1000) return `£${(v/1000).toFixed(0)}k`;
+    return `£${v.toLocaleString()}`;
+  }
+
+  function formatDate(d) {
+    if (!d) return 'Not specified';
+    try { return new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); }
+    catch { return 'Not specified'; }
+  }
+
+  function updateStats() {
+    document.getElementById('stat-total').textContent = allTenders.length;
+    document.getElementById('stat-urgent').textContent = allTenders.filter(t=>{ const d=getDaysLeft(t.deadline); return d!==null&&d<=7&&d>0; }).length;
+  }
+
+  function filterTenders() {
+    const kw=document.getElementById('search-input').value.toLowerCase().trim();
+    const loc=document.getElementById('filter-location').value.toLowerCase();
+    const sort=document.getElementById('filter-sort').value;
+    let list=allTenders.filter(t=>{
+      const txt=(t.title+' '+t.description+' '+t.buyer_name).toLowerCase();
+      return (!kw||txt.includes(kw))&&(!loc||t.location.toLowerCase().includes(loc));
+    });
+    if (sort==='closing') list.sort((a,b)=>!a.deadline?1:!b.deadline?-1:new Date(a.deadline)-new Date(b.deadline));
+    else if (sort==='newest') list.sort((a,b)=>new Date(b.published)-new Date(a.published));
+    else if (sort==='value') list.sort((a,b)=>(b.value||0)-(a.value||0));
+    renderTenders(list);
+  }
+
+  function renderTenders(list) {
+    document.getElementById('loading').style.display='none';
+    document.getElementById('error-state').style.display='none';
+    const grid=document.getElementById('tender-grid');
+    const empty=document.getElementById('empty-state');
+    const cta=document.getElementById('cta-banner');
+    document.getElementById('results-count').innerHTML=`Showing <strong>${list.length}</strong> tender${list.length!==1?'s':''}`;
+    if (!list.length) { grid.style.display='none'; empty.style.display='block'; cta.style.display='none'; return; }
+    empty.style.display='none'; grid.style.display='grid'; cta.style.display='block';
+    grid.innerHTML=list.map(buildCard).join('');
+  }
+
+  function buildCard(t) {
+    const days=getDaysLeft(t.deadline);
+    const isUrgent=days!==null&&days<=7&&days>0;
+    const isSoon=days!==null&&days<=14&&days>7;
+    const isNew=t.published&&(new Date()-new Date(t.published))<3*86400000;
+    if (days!==null&&days<=0) return '';
+    const sid=t.id.replace(/[^a-zA-Z0-9]/g,'_');
+    const daysText=days===null?'Deadline TBC':isUrgent?`🔴 ${days} day${days===1?'':'s'} left`:isSoon?`⚡ ${days} days left`:`${days} days`;
+    return `<div class="tender-card">
+      <div class="card-accent ${isUrgent?'urgent':isSoon?'closing-soon':''}"></div>
+      <div class="card-body">
+        <div class="card-badges">
+          <span class="badge badge-care">Health &amp; Social Care</span>
+          ${isUrgent?'<span class="badge badge-urgent">⚠ Closing Soon</span>':''}
+          ${isSoon&&!isUrgent?'<span class="badge badge-soon">Closing Soon</span>':''}
+          ${isNew?'<span class="badge badge-new">New</span>':''}
+        </div>
+        <div class="card-title">${t.title.length>100?t.title.slice(0,100)+'…':t.title}</div>
+        <div class="card-meta">
+          <div class="meta-row"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span><strong>${t.buyer_name}</strong></span></div>
+          <div class="meta-row"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span>${t.location}</span></div>
+          <div class="meta-row"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span>Value: <strong>${formatValue(t.value)}</strong></span></div>
+        </div>
+        <div class="closing-bar">
+          <span class="closing-label">Closing: ${formatDate(t.deadline)}</span>
+          <span class="closing-days ${isUrgent?'urgent':isSoon?'soon':''}">${daysText}</span>
+        </div>
+        ${t.description?`<button class="desc-toggle" onclick="toggleDesc('${sid}',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>Read full tender description</button><div class="desc-content" id="desc-${sid}"><p class="desc-text">${t.description.slice(0,700)}${t.description.length>700?'…':''}</p></div>`:''}
+      </div>
+      <div class="card-actions">
+        <button class="btn btn-gold" onclick='openQualify(${JSON.stringify(t.id)},${JSON.stringify(t.title)})'>✓ Can I Qualify?</button>
+        <button class="btn btn-primary" onclick='writeForMe(${JSON.stringify(t.title)},${JSON.stringify(t.buyer_name)},${JSON.stringify(t.deadline)},${JSON.stringify(formatValue(t.value))})'>✍ Write This For Me</button>
+      </div>
+    </div>`;
+  }
+
+  // ============================================
+  // WRITE THIS FOR ME — opens Zoom with tender pre-filled
+  // ============================================
+  function writeForMe(title, buyer, deadline, value) {
+    const topic=encodeURIComponent(`Tender Writing: ${title.slice(0,70)}`);
+    const notes=encodeURIComponent(
+      `I'd like help writing this tender:\n\n`+
+      `Tender: ${title}\nBuyer: ${buyer}\n`+
+      `Closing: ${deadline?new Date(deadline).toLocaleDateString('en-GB'):'Not specified'}\n`+
+      `Value: ${value}\n\n`+
+      `Please review my eligibility and discuss tender writing support with me.`
+    );
+    window.open(`https://scheduler.zoom.us/sheu-matewe/free-consultation?topic=${topic}&notes=${notes}`,'_blank');
+  }
+
+  function toggleDesc(id,btn) {
+    const c=document.getElementById(`desc-${id}`);
+    const open=c.classList.toggle('open');
+    btn.classList.toggle('open',open);
+    btn.innerHTML=open
+      ?`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>Hide description`
+      :`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>Read full tender description`;
+  }
+
+  // ============================================
+  // QUALIFY MODAL
+  // ============================================
+  function openQualify(id,title) {
+    currentTender={id,title};
+    currentStep=1;
+    document.getElementById('modal-tender-name').textContent=title.length>80?title.slice(0,80)+'…':title;
+    resetModal(); goToStep(1);
+    document.getElementById('qualify-modal').classList.add('open');
+    document.body.style.overflow='hidden';
+  }
+
+  function closeModal() {
+    document.getElementById('qualify-modal').classList.remove('open');
+    document.body.style.overflow='';
+  }
+
+  function resetModal() {
+    ['q-name','q-role','q-email','q-phone','q-business','q-regions','q-notes'].forEach(id=>{ const el=document.getElementById(id); if(el)el.value=''; });
+    ['q-type','q-age','q-capacity'].forEach(id=>{ const el=document.getElementById(id); if(el)el.selectedIndex=0; });
+    ['q-cqc','q-rating','q-contracts','q-tendered'].forEach(id=>{ const el=document.getElementById(id); if(el)el.value=''; });
+    document.querySelectorAll('.option-card.selected').forEach(el=>el.classList.remove('selected'));
+    document.querySelectorAll('.rating-pill.selected').forEach(el=>el.classList.remove('selected'));
+    document.getElementById('rating-group').style.display='none';
+    document.getElementById('modal-success').style.display='none';
+    document.getElementById('progress-wrap').style.display='block';
+    document.getElementById('step-nav').style.display='flex';
+  }
+
+  function goToStep(n) {
+    currentStep=n;
+    for(let i=1;i<=TOTAL_STEPS;i++){
+      const el=document.getElementById(`step-${i}`);
+      if(el)el.classList.toggle('active',i===n);
+    }
+    for(let i=1;i<=TOTAL_STEPS;i++){
+      const el=document.getElementById(`ps-${i}`);
+      if(el)el.className='progress-step'+(i<n?' done':i===n?' active':'');
+    }
+    const labels=['Your Business','CQC & Compliance','Capacity & Experience','How to Hear Back'];
+    document.getElementById('progress-label').textContent=`Step ${n} of ${TOTAL_STEPS} — ${labels[n-1]}`;
+    document.getElementById('back-btn').style.display=n>1?'block':'none';
+    const nb=document.getElementById('next-btn');
+    if(n<TOTAL_STEPS){
+      nb.innerHTML=`Continue <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>`;
+      nb.style.display='flex';
+    } else { nb.style.display='none'; }
+  }
+
+  function nextStep() { if(validateStep(currentStep)&&currentStep<TOTAL_STEPS)goToStep(currentStep+1); }
+  function prevStep() { if(currentStep>1)goToStep(currentStep-1); }
+
+  function validateStep(n) {
+    if(n===1){
+      if(!document.getElementById('q-name').value.trim()||!document.getElementById('q-email').value.trim()||!document.getElementById('q-phone').value.trim()||!document.getElementById('q-business').value.trim()||!document.getElementById('q-type').value){
+        alert('Please fill in all required fields marked with *'); return false;
+      }
+      if(!document.getElementById('q-email').value.includes('@')){ alert('Please enter a valid email address'); return false; }
+    }
+    if(n===2&&!document.getElementById('q-cqc').value){ alert('Please select your CQC registration status'); return false; }
+    return true;
+  }
+
+  function selectOption(el,fieldId,value) {
+    el.parentElement.querySelectorAll('.option-card').forEach(c=>c.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById(fieldId).value=value;
+    if(fieldId==='q-cqc') document.getElementById('rating-group').style.display=value==='yes'?'block':'none';
+  }
+
+  function selectPill(el,fieldId,value) {
+    el.closest('.rating-options').querySelectorAll('.rating-pill').forEach(p=>p.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById(fieldId).value=value;
+  }
+
+  function submitQualify(contactType) {
+    if(!validateStep(3)) return;
+    const g=id=>document.getElementById(id)?.value||'';
+    const name=g('q-name'), email=g('q-email'), phone=g('q-phone'), business=g('q-business');
+    const tender=currentTender?.title||'Unknown Tender';
+
+    const subject=encodeURIComponent(`Tender Qualification: ${tender.slice(0,60)}`);
+    const body=encodeURIComponent(
+      `NEW TENDER QUALIFICATION — Care Cove Website\n${'='.repeat(45)}\n\n`+
+      `TENDER: ${tender}\n\n`+
+      `CONTACT\nName: ${name}\nRole: ${g('q-role')}\nBusiness: ${business}\nEmail: ${email}\nPhone: ${phone}\nPreferred: ${contactType==='callback'?'Call back requested':'Will book Zoom'}\n\n`+
+      `BUSINESS PROFILE\nService type: ${g('q-type')}\nOperating for: ${g('q-age')}\nCQC status: ${g('q-cqc')}\nCQC rating: ${g('q-rating')||'N/A'}\nPublic contracts: ${g('q-contracts')||'Not specified'}\nService users: ${g('q-capacity')}\nRegions: ${g('q-regions')}\nTendering experience: ${g('q-tendered')||'Not specified'}\n\nNOTES\n${g('q-notes')||'None'}`
+    );
+
+    window.open(`mailto:hello@carecove.co.uk?subject=${subject}&body=${body}`,'_blank');
+
+    // Build Zoom link with pre-filled details
+    const zoomLink=`https://scheduler.zoom.us/sheu-matewe/free-consultation?topic=${encodeURIComponent(`Tender Qualification: ${tender.slice(0,60)}`)}&notes=${encodeURIComponent(`Name: ${name}\nBusiness: ${business}\nService type: ${g('q-type')}\nCQC: ${g('q-cqc')} ${g('q-rating')}\nTender: ${tender}`)}`;
+    document.getElementById('success-zoom-link').href=zoomLink;
+
+    // Show success
+    document.querySelectorAll('.modal-step').forEach(s=>s.classList.remove('active'));
+    document.getElementById('progress-wrap').style.display='none';
+    document.getElementById('step-nav').style.display='none';
+    document.getElementById('success-detail').innerHTML=`
+      <p><strong>What happens next:</strong></p>
+      <p>✅ Your details have been sent to Sheu at Care Cove</p>
+      <p>${contactType==='callback'?`📞 Sheu will call <strong>${phone}</strong> within 24 hours`:`📅 Your Zoom link is ready below — book a time that suits you`}</p>
+      <p>📧 A confirmation has been sent to <strong>${email}</strong></p>
+    `;
+    document.getElementById('modal-success').style.display='block';
+
+    if(contactType==='zoom') setTimeout(()=>window.open(zoomLink,'_blank'),700);
+  }
+
+  document.getElementById('qualify-modal').addEventListener('click',e=>{ if(e.target===document.getElementById('qualify-modal'))closeModal(); });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape')closeModal(); });
+
+  function showLoading() {
+    document.getElementById('loading').style.display='block';
+    document.getElementById('error-state').style.display='none';
+    document.getElementById('tender-grid').style.display='none';
+    document.getElementById('empty-state').style.display='none';
+    document.getElementById('cta-banner').style.display='none';
+  }
+
+  // DEMO FALLBACK
+  function loadDemoTenders() {
+    const add=d=>new Date(Date.now()+d*86400000).toISOString();
+    allTenders=[
+      {id:'d1',title:'Provision of Domiciliary Care Services — Adults with Learning Disabilities',description:'The Council is seeking to procure domiciliary care services for adults with learning disabilities across the borough. Providers must be CQC registered with a minimum Good rating and have demonstrable experience working with this client group. The contract will run for an initial 3-year period with the option to extend for a further 2 years.',value:850000,currency:'GBP',deadline:add(6),published:add(-2),location:'West Midlands',buyer_name:'Birmingham City Council',url:'https://www.contractsfinder.service.gov.uk/Search'},
+      {id:'d2',title:'Supported Living Services for Adults with Complex Needs',description:'Framework agreement for the provision of supported living services to adults with complex physical and mental health needs. Applicants must demonstrate a person-centred approach, robust safeguarding policies, and experience supporting individuals with behaviours that challenge.',value:2400000,currency:'GBP',deadline:add(11),published:add(-1),location:'Yorkshire',buyer_name:'Leeds City Council',url:'https://www.contractsfinder.service.gov.uk/Search'},
+      {id:'d3',title:'Short Breaks and Respite Care — Children and Young People with Disabilities',description:'The Local Authority is seeking providers to deliver short breaks and respite care for children and young people aged 0–25 with disabilities. Services must be flexible, family-centred, and support children to take part in social and recreational activities in their community.',value:650000,currency:'GBP',deadline:add(19),published:add(-3),location:'Manchester',buyer_name:'Greater Manchester Combined Authority',url:'https://www.contractsfinder.service.gov.uk/Search'},
+      {id:'d4',title:'Community Healthcare and Social Care Navigation Services',description:'Seeking an experienced provider to deliver integrated community healthcare and social care navigation support. The service will help individuals and carers navigate health and social care systems, access appropriate services, and self-manage long-term conditions more effectively.',value:320000,currency:'GBP',deadline:add(28),published:add(-5),location:'South East England',buyer_name:'NHS Integrated Care Board',url:'https://www.contractsfinder.service.gov.uk/Search'},
+      {id:'d5',title:'Residential Care Home Management — Older Persons Services',description:'The Council is inviting tenders for the management of a 40-bed residential care home for older people. Providers must have a minimum of 5 years experience managing residential care homes, CQC registration and evidence of achieving Good or Outstanding ratings.',value:1800000,currency:'GBP',deadline:add(35),published:add(-7),location:'London',buyer_name:'London Borough of Hackney',url:'https://www.contractsfinder.service.gov.uk/Search'},
+      {id:'d6',title:'Mental Health Recovery and Wellbeing Services Framework',description:'Framework for the provision of community mental health recovery and wellbeing services. This includes peer support, talking therapies, crisis prevention, social prescribing, and employment support for adults with mental health needs across the region.',value:4200000,currency:'GBP',deadline:add(42),published:add(-1),location:'National',buyer_name:'NHS England',url:'https://www.contractsfinder.service.gov.uk/Search'},
+    ];
+    const b=document.createElement('div');
+    b.style.cssText='background:#fef3c7;border:1px solid #d97706;border-radius:10px;padding:14px 20px;margin-bottom:24px;font-size:0.85rem;color:#92400e;display:flex;align-items:center;gap:10px;';
+    b.innerHTML='<span>⚡</span><span><strong>Showing example tenders</strong> — Live GOV.UK data will load automatically. These show exactly how real tenders appear.</span>';
+    document.getElementById('tender-grid').before(b);
+    updateStats(); filterTenders();
+  }
+
+  loadTenders();
+  </script>
+</body>
+</html>

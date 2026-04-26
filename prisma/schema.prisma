@@ -1,0 +1,139 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TenderCategory {
+  DOMICILIARY_CARE
+  HOME_CARE
+  SUPPORTED_LIVING
+  RESIDENTIAL_CARE
+  NURSING_CARE
+  MENTAL_HEALTH
+  LEARNING_DISABILITIES
+  AUTISM
+  RESPITE
+  CHILDRENS_SERVICES
+  COMMUNITY_SUPPORT
+  COMPLEX_CARE
+  HEALTHCARE_STAFFING
+  SOCIAL_CARE
+  DAY_SERVICES
+  OTHER
+}
+
+enum TenderStatus {
+  ACTIVE
+  EXPIRED
+  STALE
+}
+
+enum DeadlineUrgency {
+  URGENT
+  SOON
+  OPEN
+  TBC
+}
+
+enum LeadStatus {
+  NEW
+  REVIEWED
+  QUALIFIED
+  DISQUALIFIED
+  WON
+  LOST
+}
+
+enum ContactPreference {
+  CALLBACK
+  ZOOM
+  EMAIL
+}
+
+model Tender {
+  id               String           @id @default(cuid())
+  source           String
+  sourceNoticeId   String
+  fingerprint      String           @unique
+  slug             String           @unique
+  title            String
+  buyer            String
+  description      String?          @db.Text
+  summary          String?          @db.Text
+  valueAmount      Float?
+  valueCurrency    String?          @default("GBP")
+  region           String?
+  locationText     String?
+  publishedAt      DateTime?
+  closingAt        DateTime?
+  sourceUrl        String
+  category         TenderCategory   @default(OTHER)
+  tags             String[]
+  relevanceScore   Int              @default(0)
+  relevanceReasons String[]
+  eligibilityNotes String[]
+  deadlineUrgency  DeadlineUrgency  @default(TBC)
+  status           TenderStatus     @default(ACTIVE)
+  searchText       String           @db.Text
+  sourceHash       String?
+  rawPayload       Json?
+  syncedAt         DateTime         @default(now())
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  leads            LeadSubmission[]
+
+  @@unique([source, sourceNoticeId])
+  @@index([status, closingAt])
+  @@index([relevanceScore, closingAt])
+  @@index([category])
+  @@index([region])
+  @@index([publishedAt])
+}
+
+model LeadSubmission {
+  id                String            @id @default(cuid())
+  tenderId          String?
+  tenderTitle       String
+  contactName       String
+  role              String?
+  email             String
+  phone             String
+  businessName      String
+  serviceType       String
+  businessAge       String?
+  cqcStatus         String
+  cqcRating         String?
+  currentContracts  String?
+  capacityBand      String?
+  regions           String?
+  tenderExperience  String?
+  notes             String?           @db.Text
+  contactPreference ContactPreference
+  status            LeadStatus        @default(NEW)
+  payload           Json
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  tender            Tender?           @relation(fields: [tenderId], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+  @@index([email])
+}
+
+model SyncRun {
+  id           String   @id @default(cuid())
+  source       String
+  searchTerms  String[]
+  fetchedCount Int      @default(0)
+  storedCount  Int      @default(0)
+  filteredCount Int     @default(0)
+  status       String
+  notes        String?  @db.Text
+  startedAt    DateTime @default(now())
+  completedAt  DateTime?
+
+  @@index([source, startedAt])
+}
